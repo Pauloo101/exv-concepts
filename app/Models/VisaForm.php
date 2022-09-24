@@ -9,5 +9,8 @@ class VisaForm extends Model
 {
     use HasFactory;
 
-    protected $guraded = ['*'];
+    // protected $guraded = ['*'];
+    protected $guarded = [];
+
+    // protected $fillable = ['user_id'];
 }

@@ -35,6 +35,7 @@ export class VisaApplicationservice{
   }
 
   async saveApplicationForm(applicationForm){
+    console.log(applicationForm)
     try {
       const response = await axios.post('/api/user/save-form', {
         ...applicationForm
@@ -49,11 +50,11 @@ export class VisaApplicationservice{
     try {
       const response = await axios.post('/api/user/upload-file', formDataIncludingFiles,{
         headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: function(progressEvent) {
-          this.uploadPercentage = parseInt(
-            Math.round((progressEvent.loaded / progressEvent.total) * 100)
-          );
-        }
+        // onUploadProgress: function(progressEvent) {
+        //   this.uploadPercentage = parseInt(
+        //     Math.round((progressEvent.loaded / progressEvent.total) * 100)
+        //   );
+        // }
       })
       return response.data
     } catch (errors) {

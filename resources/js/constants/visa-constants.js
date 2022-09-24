@@ -2,9 +2,11 @@ export const visaTypes = {
   Tier4ToTier2: 'TIER4-TO-TIER2',
   DirectWorkVisa: 'DIRECT-WORK-VISA'
 }
-
+export const ToastEmitter = {
+  SuccessToast:'SuccessToast'
+}
 export const visaRequirements = {
-  TierToTier2: [
+  'TIER4-TO-TIER2': [
     'cv',
     'BRP',
     'Passport',
@@ -15,7 +17,7 @@ export const visaRequirements = {
     'character-reference',
     'IELTS/UK-Naric'
   ],
-  DirectWorkVisa: [
+  'DIRECT-WORK-VISA': [
     'TB-test',
     'Proof-of-English-Proficiency ',
     'Driving-permit',

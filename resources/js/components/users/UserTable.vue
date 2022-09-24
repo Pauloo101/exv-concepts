@@ -1,7 +1,8 @@
 <template>
     <div>
-        <div class="flex justify-end items-center pb-4">
-                    <label for="table-search" class="sr-only">Search</label>
+        <div class="flex justify-between items-center pb-4">
+            <label> Applicants converting from tier 4 to tier 2 </label>
+                    <!-- <label for="table-search" class="sr-only">Search</label> -->
                     <div class="relative">
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                             <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
@@ -15,10 +16,16 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="py-3 px-6">
-                                Applicant name
+                                First Name
                             </th>
                             <th scope="col" class="py-3 px-6">
-                                Mobile Number
+                                Last Name
+                            </th>
+                            <th scope="col" class="py-3 px-6">
+                                Email
+                            </th>
+                            <th scope="col" class="py-3 px-6">
+                                Visa Type
                             </th>
                             <th scope="col" class="py-3 px-6">
                                 Country of Origin
@@ -27,37 +34,10 @@
                                 Accepted
                             </th>
                             <th scope="col" class="py-3 px-6">
-                                COS/CAS Issued
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Qualification Proof
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Resident Permit Valid Until
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                DBS Date of issue
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Employment Reference
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Character Reference
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Passport Info
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Resident Permit
-                            </th>
-                            <th scope="col" class="py-3 px-6">
                                 Address
                             </th>
                             <th scope="col" class="py-3 px-6">
-                                Payment
-                            </th>
-                            <th scope="col" class="py-3 px-6">
-                                Interview
+                                Mobile Number
                             </th>
                             <th scope="col" class="py-3 px-6">
                                 Comments
@@ -65,51 +45,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <tr @click="showUserModal(user)" v-for="(user, index) in users" :key="index" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Name
+                                {{user.first_name}}
                             </th>
                             <td class="py-4 px-6">
-                                Mobile Number
+                                {{user.last_name}}
                             </td>
                             <td class="py-4 px-6">
-                                Country of Origin
+                                {{user.email}}
                             </td>
                             <td class="py-4 px-6">
-                                Accepted
+                                {{user.visa_type}}
                             </td>
                             <td class="py-4 px-6">
-                                Accepted
+                                {{user.visa_form.country_origin}}
                             </td>
                             <td class="py-4 px-6">
-                                Accepted
+                                {{user.visa_form.accepted}}
                             </td>
                             <td class="py-4 px-6">
-                                Accepted
+                                {{user.visa_form.address}}
                             </td>
                             <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
-                            </td>
-                            <td class="py-4 px-6">
-                                Accepted
+                                {{user.visa_form.mobile_number}}
                             </td>
                             <td class="py-4 px-6">
                                 <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
@@ -119,8 +78,28 @@
                     </tbody>
                 </table>
             </div>
+
+
+
+
     </div>
+    <UserModal v-if="isUserModalShown" :user="user" :file="file" @close="isUserModalShown = false "></UserModal>
 </template>
 <script setup>
-
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+import UserModal from './userModal.vue';
+const users = ref();
+const isUserModalShown = ref(false);
+const user = ref()
+const file  = ref()
+const showUserModal = (userInfo)=>{
+    file.value = JSON.parse(userInfo.visa_form.files);
+    user.value = userInfo;
+    isUserModalShown.value = true
+}
+onMounted( async ()=>{
+    const response = await axios.get(`${window.origin}/api/admin/tier4-to-tier2`);
+    users.value = response.data;
+});
 </script>

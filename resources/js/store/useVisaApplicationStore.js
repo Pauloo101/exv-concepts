@@ -12,6 +12,7 @@ export const useVisaApplicationStore = defineStore('visa-application-store',{
               accepted: "",
               address: "",
               comments: "",
+              files:""
             }
           })
   },
@@ -34,12 +35,21 @@ export const useVisaApplicationStore = defineStore('visa-application-store',{
       this.visaApplicationForm =  {
         mobile_number : response.mobile_number || "",
         country_origin : response.country_origin || "",
-        accepted : response.accepted || "",
+        // accepted : response.accepted || "",
         address : response.address || "",
         comments : response.comments || "",
+        files : response.files || {},
       }
       return response
-    }
+    },
+    async saveApplicationForm (applicationForm){
+      const visaApplicationservice = new VisaApplicationservice();
+      const response = await visaApplicationservice.saveApplicationForm(applicationForm);
 
-  }
+    },
+    async uploadFile(formDataIncludingFiles){
+      const visaApplicationservice = new VisaApplicationservice();
+      const response = await visaApplicationservice.uploadFile(formDataIncludingFiles);
+    }
+  },
 })

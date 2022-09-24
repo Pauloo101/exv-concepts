@@ -6,11 +6,12 @@ use App\Models\User;
 use App\Models\VisaForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class VisaFormController extends Controller
 {
-    const VISA_TYPE = ['TIER4-TO-TIER2', 'DIRECT-WORK-VISA'];
+    const VISA_TYPE = ['TIER4-TO-TIER2'=>'TIER4-TO-TIER2', 'DIRECT-WORK-VISA'=>'DIRECT-WORK-VISA'];
     const FILEREQUIREMENTS = [
         'TIER4-TO-TIER2' => [
            'cv',
@@ -40,13 +41,16 @@ class VisaFormController extends Controller
 
     public function saveForm(Request $request)
     {
+        Log::info($request->mobile_number);
+        Log::info($request->country_origin);
+        Log::info($request->address);
         try {
             $applicationForm = VisaForm::updateOrCreate(
                 ['user_id' => Auth::user()->id],
                 [
-                    'mobile_number'=>$request->mobile_mobile,
+                    'mobile_number'=>$request->mobile_number,
                     'country_origin' => $request->country_origin,
-                    'accepted' => $request->accepted,
+                    // 'accepted' => $request->accepted,
                     'address' => $request->address,
                 ]
             );
@@ -87,6 +91,12 @@ class VisaFormController extends Controller
 
     public function uploadFile(Request $request): bool
     {
+        // Log::info($request->cv->path());
+        //         // Log::info($request->cv)
+        //         // return null;
+        //         $fileName = Auth::user()->id.'-'.$request->file('cv')->getClientOriginalName();
+        //         Storage::putFileAs('TIER4-TO-TIER2', $request->file('cv'), $fileName);
+        //         return true;
         $userVisaType = User::find(Auth::user()->id)->visa_type;
         if($userVisaType === SELF::VISA_TYPE['TIER4-TO-TIER2']){
             return $this->filesForTier4toTier2($request);
@@ -103,10 +113,12 @@ class VisaFormController extends Controller
             if(!$current_files){
                 $current_files = [];
             }
-            for ($i=0; $i < count($request->selectedFiles); $i++) {
-                $fileName = Auth::user()->id.'-'.$request->file($request->selectedFiles[$i])->getClientOriginalName();
-                Storage::putFileAs('TIER4-TO-TIER2', $request->file($request->selectedFiles[$i]), $fileName);
-                $current_files[$request->file($request->selectedFiles[$i])] = ['title'=>$request->file($request->selectedFiles[$i]), 'path'=> $fileName];
+            for ($i=0; $i < count(SELF::FILEREQUIREMENTS['TIER4-TO-TIER2']); $i++) {
+                if ($request->hasFile((SELF::FILEREQUIREMENTS['TIER4-TO-TIER2'][$i]))) {
+                    $fileName = Auth::user()->id.'-'.$request->file(SELF::FILEREQUIREMENTS['TIER4-TO-TIER2'][$i])->getClientOriginalName();
+                    Storage::putFileAs('TIER4-TO-TIER2', $request->file(SELF::FILEREQUIREMENTS['TIER4-TO-TIER2'][$i]), $fileName);
+                    $current_files[SELF::FILEREQUIREMENTS['TIER4-TO-TIER2'][$i]] = ['title'=>SELF::FILEREQUIREMENTS['TIER4-TO-TIER2'][$i], 'path'=> $fileName];
+                }
             }
             $userApplication->files = $current_files;
             $userApplication->save();
@@ -124,10 +136,12 @@ class VisaFormController extends Controller
                 if(!$current_files){
                     $current_files = [];
                 }
-                for ($i=0; $i < count($request->selectedFiles); $i++) {
-                    $fileName = Auth::user()->id.'-'.$request->file($request->selectedFiles[$i])->getClientOriginalName();
-                    Storage::putFileAs('DIRECT-WORK-VISA', $request->file($request->selectedFiles[$i]), $fileName);
-                    $current_files[$request->file($request->selectedFiles[$i])] = ['title'=>$request->file($request->selectedFiles[$i]), 'path'=> $fileName];
+                for ($i=0; $i < count(SELF::FILEREQUIREMENTS['DIRECT-WORK-VISA']); $i++) {
+                    if ($request->hasFile(SELF::FILEREQUIREMENTS['DIRECT-WORK-VISA'][$i])) {
+                        $fileName = Auth::user()->id.'-'.$request->file(SELF::FILEREQUIREMENTS['DIRECT-WORK-VISA'][$i])->getClientOriginalName();
+                        Storage::putFileAs('DIRECT-WORK-VISA', $request->file(SELF::FILEREQUIREMENTS['DIRECT-WORK-VISA'][$i]), $fileName);
+                        $current_files[SELF::FILEREQUIREMENTS['DIRECT-WORK-VISA'][$i]] = ['title'=>SELF::FILEREQUIREMENTS['DIRECT-WORK-VISA'][$i], 'path'=> $fileName];
+                    }
                 }
                 $userApplication->files = $current_files;
                 $userApplication->save();
