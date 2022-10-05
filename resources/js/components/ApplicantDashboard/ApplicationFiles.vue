@@ -5,7 +5,9 @@
                 <div class="col-span-6 sm:col-span-3" v-for="(requiredfile, index) in requiredFiles" :key="index" >
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300" for="file_input">{{requiredfile}}</label>
                     <input @change="selectFile($event, requiredfile)" class="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
-                    <label v-if="uploadedFiles[requiredfile]"> File uploaded is {{uploadedFiles[requiredfile].path}} </label>
+                    <template v-if="uploadedFiles">
+                        <label v-if="uploadedFiles[requiredfile]"> File uploaded is {{uploadedFiles[requiredfile].path}} </label>
+                    </template>
                     <label v-else > No file added that represent {{requiredfile}} </label>
                 </div>
             </div>
@@ -32,7 +34,12 @@ const files = ref(new FormData());
 const selectedFiles = ref([]);
 const visaApplicationStore = useVisaApplicationStore()
 const selectedVisaType = computed(() => visaApplicationStore.selectedVisaApplicationType);
-const uploadedFiles = computed(() => JSON.parse(visaApplicationStore.visaApplicationForm.files));
+const uploadedFiles = computed(() => {
+    if(visaApplicationStore.visaApplicationForm.file){
+        return JSON.parse(visaApplicationStore.visaApplicationForm.files);
+    }
+    return false
+});
 const requiredFiles = ref(visaRequirements[selectedVisaType.value]);
 const isUploading  = ref(false);
 const selectFile = async (e, requiredFile)=>{

@@ -11,8 +11,10 @@ export function setAxiosGlobally(){
         return response
       },
       (error)=>{
-        console.log(error)
-        if(error.response.data.error == "Unauthenticated" || error.response.data.error == "CSRF token mismatch."){
+        // console.log(error.response.data)
+        if(error.response.data.message == "Unauthenticated." || error.response.data.error == "CSRF token mismatch."){
+          localStorage.removeItem("bearerToken");
+          localStorage.removeItem("adminBearerToken");
           location.replace('/');
         }
       }

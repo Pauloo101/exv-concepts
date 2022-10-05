@@ -25,6 +25,7 @@ export const useAuthStore = defineStore('auth', {
     async userRegister({email, password, firstName, lastName}){
       const authService = new AuthService();
       const response = await authService.userRegister({email, password, firstName, lastName});
+      this.user = response.user;
       return response;
     }
   },

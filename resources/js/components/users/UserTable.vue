@@ -47,28 +47,28 @@
                     <tbody>
                         <tr @click="showUserModal(user)" v-for="(user, index) in users" :key="index" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{user.first_name}}
+                                {{user?.first_name}}
                             </th>
                             <td class="py-4 px-6">
-                                {{user.last_name}}
+                                {{user?.last_name}}
                             </td>
                             <td class="py-4 px-6">
-                                {{user.email}}
+                                {{user?.email}}
                             </td>
                             <td class="py-4 px-6">
-                                {{user.visa_type}}
+                                {{user?.visa_type}}
                             </td>
                             <td class="py-4 px-6">
-                                {{user.visa_form.country_origin}}
+                                {{user?.visa_form?.country_origin}}
                             </td>
                             <td class="py-4 px-6">
-                                {{user.visa_form.accepted}}
+                                {{user?.visa_form?.accepted}}
                             </td>
                             <td class="py-4 px-6">
-                                {{user.visa_form.address}}
+                                {{user?.visa_form?.address}}
                             </td>
                             <td class="py-4 px-6">
-                                {{user.visa_form.mobile_number}}
+                                {{user?.visa_form?.mobile_number}}
                             </td>
                             <td class="py-4 px-6">
                                 <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
@@ -94,7 +94,7 @@ const isUserModalShown = ref(false);
 const user = ref()
 const file  = ref()
 const showUserModal = (userInfo)=>{
-    file.value = JSON.parse(userInfo.visa_form.files);
+    file.value = userInfo?.visa_form?.files ?  JSON.parse(userInfo.visa_form.files) : {};
     user.value = userInfo;
     isUserModalShown.value = true
 }
